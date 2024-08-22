@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
+import { Box, Stack, TextField, Button, CircularProgress, Typography, Paper } from '@mui/material';
 
 export default function Home() {
   const [messages, setMessages] = useState([
@@ -72,6 +72,13 @@ export default function Home() {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
     <Box
       width="100vw"
@@ -80,61 +87,95 @@ export default function Home() {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      bgcolor="#e0f2f1" // Background color for the whole page
+      p={2}
     >
-      <Stack
-        direction="column"
-        width="600px"
-        height="700px"
-        border="1px solid black"
-        p={2}
-        spacing={3}
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        sx={{
+          fontWeight: 'bold',
+          mb: 2,
+          color: '#00796b', // Title color
+        }}
+      >
+        GPT Discordia
+      </Typography>
+      <Paper
+        elevation={6}
+        sx={{
+          width: '800px', // Increased width
+          height: '600px', // Increased height
+          display: 'flex',
+          flexDirection: 'column',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff', // Background color for the chat box
+          border: '1px solid #cfd8dc', // Border color
+        }}
       >
         <Stack
           direction="column"
           spacing={2}
           flexGrow={1}
           overflow="auto"
-          maxHeight="100%"
+          p={2}
+          sx={{
+            backgroundColor: '#fafafa', // Background color for message area
+          }}
         >
           {messages.map((message, index) => (
             <Box
               key={index}
               display="flex"
-              justifyContent={
-                message.role === 'assistant' ? 'flex-start' : 'flex-end'
-              }
+              justifyContent={message.role === 'assistant' ? 'flex-start' : 'flex-end'}
+              mb={1}
             >
               <Box
-                bgcolor={
-                  message.role === 'assistant' ? 'primary.main' : 'secondary.main'
-                }
+                bgcolor={message.role === 'assistant' ? 'primary.main' : 'secondary.main'}
                 color="white"
                 borderRadius={16}
-                p={3}
+                p={2}
+                maxWidth="75%" // Adjusted width
+                display="flex"
+                alignItems="center"
+                boxShadow={2}
               >
-                {message.content}
+                <Typography variant="body1" component="span">
+                  {message.content}
+                </Typography>
               </Box>
             </Box>
           ))}
         </Stack>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} p={2}>
           <TextField
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
             variant="outlined"
             placeholder="Type your message..."
             fullWidth
             disabled={isLoading}
+            InputProps={{
+              sx: {
+                borderRadius: '16px',
+              },
+            }}
           />
           <Button
             variant="contained"
             onClick={sendMessage}
             disabled={isLoading}
+            sx={{
+              borderRadius: '16px',
+            }}
           >
             {isLoading ? <CircularProgress size={24} /> : 'Send'}
           </Button>
         </Stack>
-      </Stack>
+      </Paper>
     </Box>
   );
 }
